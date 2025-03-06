@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Unwanted Data from File</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        textarea, button, input[type="file"] {
+            margin: 10px 10px 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #output {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Remove Unwanted Data from File</h1>
+    <p>Upload a text file to clean it from unwanted data:</p>
+
+    <input type="file" id="fileInput" accept=".txt" />
+    <button onclick="loadFile()">Load File</button>
+
+    <h2>File Content:</h2>
+    <div id="output">Uploaded file content will appear here...</div>
+
+    <button id="removeLinesButton" onclick="removeUnwantedLines()" style="display: none; margin-top: 10px;">Remove Unwanted Lines</button>
+    <button id="copyOutputButton" onclick="copyFinalOutput()" style="display: none; margin-top: 10px;">Copy Final Output</button>
+
+    <script>
+        let fileContent = ""; // Stores the content of the uploaded file
+
+        function loadFile() {
+            const fileInput = document.getElementById("fileInput");
+            const outputDiv = document.getElementById("output");
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                outputDiv.innerText = "No file selected. Please upload a text file.";
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                fileContent = event.target.result;
+                outputDiv.innerText = fileContent;
+
+                // Enable "Remove Unwanted Lines" button
+                document.getElementById("removeLinesButton").style.display = "inline-block";
+            };
+
+            reader.onerror = function () {
+                outputDiv.innerText = "Error reading file.";
+            };
+
+            reader.readAsText(file);
+        }
+
+        function removeUnwantedLines() {
+            const lines = fileContent.split("\n").filter(line => line.trim()); // Remove empty lines
+            const filteredResults = [];
+            let skipNext = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+
+                // Skip lines that contain "Error: 500 Server Error" or "Title: Title not found"
+                if (line.includes("Error: 500 Server Error") || line.includes("Title: Title not found")) {
+                    skipNext = true; // Skip the next URL-Title pair
+                    continue;
+                }
+
+                if (skipNext) {
+                    skipNext = false; // Reset the flag for the next iteration
+                    continue;
+                }
+
+                filteredResults.push(line);
+
+                // Add an empty line after each Title for spacing
+                if (line.startsWith("Title:")) {
+                    filteredResults.push(""); // Add blank line
+                }
+            }
+
+            // Update the file content with filtered results
+            fileContent = filteredResults.join("\n");
+
+            // Display the filtered results
+            document.getElementById("output").innerText = fileContent;
+
+            // Enable the "Copy Final Output" button
+            document.getElementById("copyOutputButton").style.display = "inline-block";
+        }
+
+        function copyFinalOutput() {
+            navigator.clipboard.writeText(fileContent).then(() => {
+                alert("Final output copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+            });
+        }
+    </script>
+</body>
+</html>

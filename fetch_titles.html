@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Webpage Titles with Progress</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        textarea, button {
+            margin: 10px 10px 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #output, #progress {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fetch Webpage Titles</h1>
+    <p>Enter the URLs below (one per line) to fetch their titles:</p>
+
+    <textarea id="urls" rows="5" placeholder="Enter URLs, one per line..."></textarea>
+    <div>
+        <button onclick="fetchTitles()">Fetch Titles</button>
+        <button onclick="abortOperation()" style="background-color: red;">Abort Operation</button>
+    </div>
+
+    <h2>Progress:</h2>
+    <div id="progress">Progress will appear here...</div>
+
+    <h2>Results:</h2>
+    <div id="output">Results will appear here...</div>
+    <button id="removeLinesButton" onclick="removeUnwantedLines()" style="display: none; margin-top: 10px;">Remove Unwanted Lines</button>
+    <button id="copyOutputButton" onclick="copyFinalOutput()" style="display: none; margin-top: 10px;">Copy Final Output</button>
+
+    <script>
+        let abort = false; // Abort flag
+
+        function formatTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function abortOperation() {
+            abort = true;
+            document.getElementById("progress").innerText = "Operation aborted!";
+        }
+
+        async function fetchTitles() {
+            abort = false; // Reset abort flag
+            const urls = document.getElementById("urls").value.split("\n").map(url => url.trim()).filter(url => url);
+            const outputDiv = document.getElementById("output");
+            const progressDiv = document.getElementById("progress");
+
+            outputDiv.innerText = "";
+            progressDiv.innerText = "Fetching titles...\n";
+
+            if (urls.length === 0) {
+                progressDiv.innerText = "Please enter at least one URL!";
+                return;
+            }
+
+            const startTime = Date.now();
+            let completed = 0;
+
+            for (let i = 0; i < urls.length; i++) {
+                if (abort) {
+                    progressDiv.innerText += "\nOperation aborted!";
+                    return;
+                }
+
+                const url = urls[i];
+                try {
+                    const response = await fetch("http://localhost:5000/fetch-titles", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ urls: [url] })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const title = data[url] || "Title not found";
+                        outputDiv.innerText += `URL: ${url}\nTitle: ${title}\n\n`;
+                    } else {
+                        outputDiv.innerText += `URL: ${url}\nError: Failed to fetch title (Status: ${response.status})\n\n`;
+                    }
+                } catch (error) {
+                    outputDiv.innerText += `URL: ${url}\nError: ${error.message}\n\n`;
+                }
+
+                // Update progress
+                completed++;
+                const elapsedTime = (Date.now() - startTime) / 1000; // in seconds
+                const timePerUrl = elapsedTime / completed; // Average time per URL
+                const remainingTime = (urls.length - completed) * timePerUrl; // Estimated time remaining
+
+                progressDiv.innerText = `Titles fetched: (${completed}/${urls.length})\nEstimated time remaining: ${formatTime(remainingTime)}`;
+            }
+
+            progressDiv.innerText += "\nTask completed!";
+
+            // Enable the "Remove Unwanted Lines" button
+            document.getElementById("removeLinesButton").style.display = "inline-block";
+        }
+
+        function removeUnwantedLines() {
+            const outputDiv = document.getElementById("output");
+            const lines = outputDiv.innerText.split("\n").filter(line => line.trim()); // Remove empty lines
+            const filteredResults = [];
+            let skipNext = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+
+                // Skip lines that contain "Error: 500 Server Error" or "Title: Title not found"
+                if (line.includes("Error: 500 Server Error") || line.includes("Title: Title not found")) {
+                    skipNext = true; // Skip the next URL-Title pair
+                    continue;
+                }
+
+                if (skipNext) {
+                    skipNext = false; // Reset the flag for the next iteration
+                    continue;
+                }
+
+                filteredResults.push(line);
+
+                // Add an empty line after each Title for spacing
+                if (line.startsWith("Title:")) {
+                    filteredResults.push(""); // Add blank line
+                }
+            }
+
+            outputDiv.innerText = filteredResults.join("\n");
+            document.getElementById("copyOutputButton").style.display = "inline-block"; // Enable the "Copy Final Output" button
+        }
+
+        function copyFinalOutput() {
+            const outputDiv = document.getElementById("output");
+            const textToCopy = outputDiv.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("Final output copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+            });
+        }
+    </script>
+</body>
+</html>

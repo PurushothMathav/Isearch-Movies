@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Link Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #links {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #fff;
+            max-height: 400px;
+            overflow-y: scroll;
+        }
+        #count {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Page Link Generator</h1>
+    <input type="number" id="start" placeholder="Enter Start Page (e.g., 10001)" />
+    <input type="number" id="end" placeholder="Enter End Page (e.g., 89214)" />
+    <button onclick="generatePageLinks()">Generate Links</button>
+    <button id="copyLinksButton" onclick="copyLinks()" style="display: none;">Copy Links</button>
+    <h2>Generated Links:</h2>
+    <div id="links">No links generated yet.</div>
+    <div id="count"></div>
+
+    <script>
+        function generatePageLinks() {
+            const start = parseInt(document.getElementById("start").value);
+            const end = parseInt(document.getElementById("end").value);
+            const baseUrl = "https://isaidl.one/download/file/";
+            const linksDiv = document.getElementById("links");
+            const countDiv = document.getElementById("count");
+            const copyButton = document.getElementById("copyLinksButton");
+
+            if (isNaN(start) || isNaN(end) || start > end) {
+                linksDiv.innerText = "Please enter valid start and end values!";
+                copyButton.style.display = "none";
+                countDiv.innerText = ""; // Clear the count
+                return;
+            }
+
+            let links = "";
+            for (let i = start; i <= end; i++) {
+                links += `${baseUrl}${i}\n`;
+            }
+
+            // Display links and count
+            linksDiv.innerText = links;
+            countDiv.innerText = `Total Links Generated: ${end - start + 1}`;
+
+            // Show the "Copy Links" button
+            copyButton.style.display = "inline-block";
+        }
+
+        function copyLinks() {
+            const linksDiv = document.getElementById("links");
+            const textToCopy = linksDiv.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("Links copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy links: ", err);
+            });
+        }
+    </script>
+</body>
+</html>
