@@ -10,6 +10,4 @@ How to run :
     or
     If you run this in Codespace then Visit to your forwarding port
 4. Then you'll get below output,
-    ![alt text](image.png)
-# Isearch-Movies
-Get Download Link for Tamil Movies and Tamil Dubbed Movies at one place
+  ![Screenshot 2025-03-06 220321](https://github.com/user-attachments/assets/a7f5bba1-fdf0-480f-9fe7-c9b3c9a8fa27)
