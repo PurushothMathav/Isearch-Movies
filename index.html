@@ -70,7 +70,7 @@
 
             try {
                 // Fetch the contents of the text file
-                const response = await fetch("Movie titles.txt");
+                const response = await fetch("./Movie%20Titles.txt");
                 if (!response.ok) {
                     throw new Error(`Failed to load the file. Status: ${response.status}`);
                 }
