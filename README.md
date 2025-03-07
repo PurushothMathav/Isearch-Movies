@@ -11,7 +11,7 @@ A simple web application that allows users to search for movie titles from a tex
 
 ## How to Use
 
-1. Clone or download the repository to your local machine.
+1. Clone or download the repository to your local machine. https://github.com/PurushothMathav/Isearch-Movies/blob/main/movie_search.html
 2. Place the `Movie titles.txt` file in the same directory as the HTML file. This text file should follow the structure:
 URL: <Movie URL> Title: <Movie Title>
 
