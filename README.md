@@ -15,10 +15,11 @@ A simple web application that allows users to search for movie titles from a tex
 2. Place the `Movie titles.txt` file in the same directory as the HTML file. This text file should follow the structure:
 
 ## URL: <Movie URL> Title: <Movie Title>
+
 Each movie should occupy two lines (one for the URL, one for the title), with no empty lines between them.
-3. Open the `index.html` file in any modern web browser.
-4. Enter a keyword in the search bar and click the "Search" button.
-5. Matching movie titles and their URLs will be displayed in the results section.
+1. Open the `index.html` file in any modern web browser.
+2. Enter a keyword in the search bar and click the "Search" button.
+3. Matching movie titles and their URLs will be displayed in the results section.
 
 ## Requirements
 
