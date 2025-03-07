@@ -46,6 +46,6 @@ Each movie should occupy two lines (one for the URL, one for the title), with no
 ## File Structure
 
 ```plaintext
-├── index.html  (HTML file containing the application code)
-├── Movie titles.txt  (Text file containing movie data: URLs and titles)
+├── movie_search.html  (HTML file containing the application code)
+├── Movie Titles.txt  (Text file containing movie data: URLs and titles)
 
