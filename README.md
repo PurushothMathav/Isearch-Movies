@@ -31,7 +31,7 @@ Each movie should occupy two lines (one for the URL, one for the title), with no
 2.CSS (for styling)
 3.JavaScript (for functionality)
 
-##Customization
+## Customization
 1.You can customize the design by modifying the CSS in the <style> section of the HTML file.
 2.The script fetches the Movie titles.txt file dynamically, so you can update the file content without modifying the script.
 
