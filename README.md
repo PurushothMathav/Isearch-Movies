@@ -34,12 +34,15 @@ Each movie should occupy two lines (one for the URL, one for the title), with no
 ## Customization
 
 1.You can customize the design by modifying the CSS in the <style> section of the HTML file.
+
 2.The script fetches the Movie titles.txt file dynamically, so you can update the file content without modifying the script.
 
 ## Troubleshooting
 
 1.If the application cannot find the Movie titles.txt file, ensure it is located in the same directory as the index.html file.
+
 2.Check the browser console for any error messages if the application doesn't work as expected.
+
 3.Make sure to check Name defined in html same as file name in the directory without any change. If you run locally, then
 // const response = await fetch("Movie Titles.txt"); is enough. else you have to use
 //const response = await fetch("./Movie%20Titles.txt");
