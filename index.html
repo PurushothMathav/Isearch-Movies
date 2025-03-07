@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Title Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #results {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search Movie Titles</h1>
+    <p>Enter a keyword to search for movie titles:</p>
+    <input type="text" id="searchQuery" placeholder="Search for a keyword (e.g., 'dragon')" />
+    <button onclick="searchTitles()">Search</button>
+
+    <h2>Results:</h2>
+    <div id="results">Results will appear here...</div>
+
+    <script>
+        async function searchTitles() {
+            const query = document.getElementById("searchQuery").value.toLowerCase().trim();
+            const resultsDiv = document.getElementById("results");
+
+            resultsDiv.innerText = "Searching...";
+
+            if (!query) {
+                resultsDiv.innerText = "Please enter a search keyword!";
+                return;
+            }
+
+            try {
+                // Fetch the contents of the text file
+                const response = await fetch("Movie titles.txt");
+                if (!response.ok) {
+                    throw new Error(`Failed to load the file. Status: ${response.status}`);
+                }
+
+                const fileContent = await response.text();
+
+                // Split the content into lines and ensure proper pairing
+                const lines = fileContent.split("\n").map(line => line.trim()).filter(line => line); // Remove empty lines
+                const matchingResults = [];
+
+                for (let i = 0; i < lines.length; i += 2) {
+                    let url = lines[i];
+                    let title = lines[i + 1];
+
+                    // Remove "URL:" prefix if it exists before creating clickable link
+                    if (url.startsWith("URL:")) {
+                        url = url.replace("URL:", "").trim();
+                    }
+
+                    // Ensure Title doesn't have duplicate prefix
+                    if (title.startsWith("Title:")) {
+                        title = title.replace("Title:", "").trim();
+                    }
+
+                    // Check if the title matches the query
+                    if (title.toLowerCase().includes(query)) {
+                        // Create clickable link for the actual URL
+                        const clickableUrl = `<a href="${url}" target="_blank">${url}</a>`;
+                        matchingResults.push(`URL: ${clickableUrl}\nTitle: ${title}`);
+                    }
+                }
+
+                // Display results
+                if (matchingResults.length > 0) {
+                    resultsDiv.innerHTML = matchingResults.join("<br><br>");
+                } else {
+                    resultsDiv.innerText = "No results found for your search.";
+                }
+            } catch (error) {
+                resultsDiv.innerText = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
